@@ -1,6 +1,6 @@
 # Mom Amy Care
 
-A Laravel 11 backend foundation for **MotherBridge – 智慧孕产健康档案平台**. It provides FHIR-friendly APIs to manage pregnancy records, observations, reports, and vitals for families while matching enterprise healthcare requirements (Gravit-e, Optum).
+A Laravel 11 backend foundation for **Mom Amy Care – 艾米智慧孕产AI助手**. It provides FHIR-friendly APIs to manage pregnancy records, observations, reports, and vitals for families while matching enterprise healthcare requirements (Gravit-e, Optum).
 
 The goal is to grow this service into a personalized maternal health assistant anchored by an AI avatar named **Mom Amy** who
 can guide every user through their care journey with proactive recommendations.
