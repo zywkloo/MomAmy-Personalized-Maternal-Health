@@ -55,7 +55,7 @@ class FhirService
             'weight' => ['code' => '29463-7', 'system' => 'http://loinc.org', 'display' => 'Body weight'],
             'heart_rate' => ['code' => '8867-4', 'system' => 'http://loinc.org', 'display' => 'Heart rate'],
             'glucose' => ['code' => '2345-7', 'system' => 'http://loinc.org', 'display' => 'Glucose [Mass/volume] in Blood'],
-            default => ['code' => $type, 'system' => 'http://momamy-care/fhir', 'display' => Str::title(str_replace('_', ' ', $type))],
+            default => ['code' => $type, 'system' => 'http://mamaamy-care/fhir', 'display' => Str::title(str_replace('_', ' ', $type))],
         };
 
         return Observation::create([
