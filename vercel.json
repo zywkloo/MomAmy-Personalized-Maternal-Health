@@ -1,5 +1,6 @@
+// vercel.json
 {
-  "installCommand": "composer install --prefer-dist --no-dev --optimize-autoloader && npm install",
+  "installCommand": "curl -sS https://getcomposer.org/installer | php && php composer.phar install --prefer-dist --no-dev --optimize-autoloader && npm install",
   "buildCommand": "npm run build",
   "functions": {
     "api/index.php": {
