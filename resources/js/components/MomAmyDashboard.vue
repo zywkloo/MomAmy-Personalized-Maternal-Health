@@ -4,7 +4,7 @@
             <div class="hero-content">
                 <div class="avatar-card">
                     <div class="avatar">
-                        <span>Mom Amy</span>
+                        <span>Mama Amy</span>
                     </div>
                     <p class="avatar-message">
                         Your compassionate companion for every milestone and question.
@@ -20,11 +20,11 @@
                             aria-label="Last period start date"
                         />
                         <button type="button" class="cta-button">
-                            Share with Mom Amy
+                            Share with Mama Amy
                         </button>
                     </div>
                     <p class="congrats" role="status">
-                        Congratulations on stepping into motherhood! Mom Amy is here to celebrate and guide you.
+                        Congratulations on stepping into motherhood! Mama Amy is here to celebrate and guide you.
                     </p>
                 </div>
             </div>
