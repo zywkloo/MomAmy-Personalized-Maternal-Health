@@ -65,6 +65,72 @@ Run the Laravel development server:
 php artisan serve
 ```
 
+### Windows (PowerShell) local development setup
+
+If you're developing on Windows, you can stay entirely inside PowerShell. Install PHP 8.2+, Composer, Node 18+, and (optionally)
+SQLite or MySQL. Then follow the flow below from a PowerShell prompt:
+
+```powershell
+# Clone and install dependencies
+git clone <repo-url> mom-amy-care
+Set-Location mom-amy-care   # PowerShell equivalent of "cd"; moves into the project folder
+composer install
+
+# Create your environment file and application key
+Copy-Item .env.example .env
+php artisan key:generate
+
+# Make sure Laravel isn't using a cached config
+php artisan config:clear
+
+# Configure the database driver in .env if you prefer MySQL over SQLite
+# Then run migrations (SQLite works out of the box)
+php artisan migrate
+
+# Launch the built-in server (http://127.0.0.1:8000)
+php artisan serve
+```
+
+When you're finished, stop the server with `Ctrl+C`.
+
+#### Troubleshooting “Invalid key supplied” on Windows
+
+If the built-in server throws `LogicException: Invalid key supplied`, it means
+Laravel is not reading the `APP_KEY` value you expect. Work through the checks
+below directly in PowerShell:
+
+1. **Make sure you are inside the project folder.** `Set-Location mom-amy-care`
+   must appear before you run `php artisan serve` or any other Artisan command;
+   otherwise Laravel will look for an `.env` file in the wrong directory.
+2. **Regenerate the key and paste it into `.env`.**
+   ```powershell
+   php artisan key:generate --show
+   ```
+   Copy the `base64:...` string into the `APP_KEY=` line of `.env`, save the
+   file, and rerun the next steps.
+3. **Clear Laravel's cached configuration and runtime files.**
+   ```powershell
+   php artisan config:clear
+   php artisan cache:clear
+   php artisan route:clear
+   php artisan view:clear
+   php artisan optimize:clear
+   ```
+   Cached configuration or compiled artifacts in `bootstrap/cache/` can keep the
+   previous key in memory; clearing them forces Laravel to reread `.env`.
+4. **Confirm what Laravel sees at runtime.**
+   `Get-ChildItem Env:APP_KEY` only lists Windows environment variables, so it
+   will report “path not found” unless you manually exported the key. To verify
+   the value Laravel actually loads, run:
+   ```powershell
+   php artisan tinker --execute "dump(config('app.key'))"
+   ```
+   or start Tinker (`php artisan tinker`) and call `config('app.key')`. The
+   printed value should match the `APP_KEY=` entry in `.env`.
+
+If those steps still fail, delete `bootstrap/cache/config.php` (if present),
+restart the terminal, and try `php artisan serve` again.
+
 Optional: start the gRPC DICOM stub (requires Go):
 
 ```bash
