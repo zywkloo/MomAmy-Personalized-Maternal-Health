@@ -1,4 +1,4 @@
-# Mom Amy Care
+# Mom Amy – Your Smart Pregnancy & Baby Care Companion
 
 A Laravel 11 backend foundation for **Mom Amy Care – 艾米智慧孕产AI助手**. It provides FHIR-friendly APIs to manage pregnancy records, observations, reports, and vitals for families while matching enterprise healthcare requirements (Gravit-e, Optum).
 
