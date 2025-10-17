@@ -1,6 +1,9 @@
-# MomAmy Care
+# Mom Amy Care
 
 A Laravel 11 backend foundation for **MotherBridge – 智慧孕产健康档案平台**. It provides FHIR-friendly APIs to manage pregnancy records, observations, reports, and vitals for families while matching enterprise healthcare requirements (Gravit-e, Optum).
+
+The goal is to grow this service into a personalized maternal health assistant anchored by an AI avatar named **Mom Amy** who
+can guide every user through their care journey with proactive recommendations.
 
 ---
 
@@ -17,7 +20,7 @@ A Laravel 11 backend foundation for **MotherBridge – 智慧孕产健康档案�
 
 ## 🏗️ Architecture Overview
 
-- Laravel 11 API (`backend/`) with Passport for OAuth2 / JWT access tokens.
+- Laravel 11 API with Passport for OAuth2 / JWT access tokens.
 - MySQL handles transactional data; Couchbase reserved for document storage (FHIR JSON, session sharing).
 - gRPC DICOM microservice stub (`grpc-dicom/`) prepared for image metadata parsing / de-identification.
 - Job-ready scaffolding (queues, events) for OCR parsing, AI insights, BLE ingestion.
@@ -38,8 +41,8 @@ A Laravel 11 backend foundation for **MotherBridge – 智慧孕产健康档案�
 ### Installation
 
 ```bash
-git clone <repo-url>
-cd MomAmy-Care
+git clone <repo-url> mom-amy-care
+cd mom-amy-care
 composer install
 cp .env.example .env
 php artisan key:generate
