@@ -111,7 +111,7 @@ assets from `public/build`.
    requires). Use `php artisan key:generate --show` locally to create a deployable `APP_KEY`.
 5. Click **Deploy**. Vercel will install Composer + npm dependencies, run the Vite build, then provision the PHP serverless
    function defined in `api/index.php`.
-6. After the first deployment finishes, open the live URL and you should see the Mom Amy onboarding dashboard.
+6. After the first deployment finishes, open the live URL and you should see the Mama Amy onboarding dashboard.
 
 #### Local smoke test for the Vercel build
 

@@ -1,7 +1,7 @@
 {
     "name": "mom-amy-care/platform",
     "type": "project",
-    "description": "Personalized maternal health assistant backend for Mom Amy Care.",
+    "description": "Personalized maternal health assistant backend for Mama Amy Care.",
     "keywords": [
         "laravel",
         "framework"
