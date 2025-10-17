@@ -1,0 +1,13 @@
+{
+  "installCommand": "composer install --prefer-dist --no-dev --optimize-autoloader && npm install",
+  "buildCommand": "npm run build",
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.6.0"
+    }
+  },
+  "routes": [
+    { "src": "/build/(.*)", "dest": "/public/build/$1" },
+    { "src": "/(.*)", "dest": "/api/index.php" }
+  ]
+}

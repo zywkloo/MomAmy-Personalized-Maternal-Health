@@ -1,8 +1,11 @@
 {
-    "name": "laravel/laravel",
+    "name": "mom-amy-care/platform",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Personalized maternal health assistant backend for Mom Amy Care.",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",

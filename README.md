@@ -1,6 +1,9 @@
-# MomAmy Care
+# MomAmy Personalized Maternal Health
 
-A Laravel 11 backend foundation for **MotherBridge – 智慧孕产健康档案平台**. It provides FHIR-friendly APIs to manage pregnancy records, observations, reports, and vitals for families while matching enterprise healthcare requirements (Gravit-e, Optum).
+MomAmy Personalized Maternal Health is a Laravel 11 foundation for **MotherBridge – 智慧孕产健康档案平台**, pairing clinical-grade infrastructure with a compassionate AI companion so every family can organize pregnancy records, observations, reports, and vitals with confidence while meeting enterprise requirements (Gravit-e, Optum).
+
+The goal is to grow this service into a personalized maternal health assistant anchored by an AI avatar named **Mom Amy** who
+can guide every user through their care journey with proactive recommendations.
 
 ---
 
@@ -17,7 +20,7 @@ A Laravel 11 backend foundation for **MotherBridge – 智慧孕产健康档案�
 
 ## 🏗️ Architecture Overview
 
-- Laravel 11 API (`backend/`) with Passport for OAuth2 / JWT access tokens.
+- Laravel 11 API with Passport for OAuth2 / JWT access tokens.
 - MySQL handles transactional data; Couchbase reserved for document storage (FHIR JSON, session sharing).
 - gRPC DICOM microservice stub (`grpc-dicom/`) prepared for image metadata parsing / de-identification.
 - Job-ready scaffolding (queues, events) for OCR parsing, AI insights, BLE ingestion.
@@ -38,8 +41,8 @@ A Laravel 11 backend foundation for **MotherBridge – 智慧孕产健康档案�
 ### Installation
 
 ```bash
-git clone <repo-url>
-cd MomAmy-Care
+git clone <repo-url> mom-amy-care
+cd mom-amy-care
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -92,6 +95,39 @@ All secured routes require `Authorization: Bearer <token>` header.
 - For GKE / Cloud Run: move environment secrets to Secret Manager, enable Cloud SQL / Couchbase managed cluster.
 - Frontend can be deployed separately (e.g., Vercel) consuming the REST endpoints.
 - Log aggregation via Cloud Logging or ELK stack recommended for medical audits.
+
+### Deploying to Vercel
+
+Vercel can run the full Laravel + Vue experience by treating Laravel as a serverless PHP function and serving the compiled Vite
+assets from `public/build`.
+
+1. Commit and push this repository to GitHub (or another Git provider that Vercel supports).
+2. In your Vercel dashboard, click **Add New… → Project** and import the repository.
+3. On the project configuration screen set:
+   - **Framework Preset**: `Other` (Laravel runs through the custom runtime).
+   - **Root Directory**: leave blank so the project root is used.
+   - **Build Command**: `npm run build`
+   - **Install Command**: `composer install --prefer-dist --no-dev --optimize-autoloader && npm install`
+   - **Output Directory**: `public`
+4. Under **Environment Variables**, add your production values (at minimum `APP_KEY`, plus any database or API keys your build
+   requires). Use `php artisan key:generate --show` locally to create a deployable `APP_KEY`.
+5. Click **Deploy**. Vercel will install Composer + npm dependencies, run the Vite build, then provision the PHP serverless
+   function defined in `api/index.php`.
+6. After the first deployment finishes, open the live URL and you should see the Mom Amy onboarding dashboard.
+
+#### Local smoke test for the Vercel build
+
+You can mimic the production bundle before pushing by running:
+
+```bash
+composer install --prefer-dist --no-dev --optimize-autoloader
+npm install
+npm run build
+php artisan serve
+```
+
+Visit `http://127.0.0.1:8000` and confirm the dashboard renders correctly. When you're done, run `composer install` (without
+`--no-dev`) to restore your local development dependencies.
 
 ---
 
