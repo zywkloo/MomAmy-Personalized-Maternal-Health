@@ -1,5 +1,5 @@
 <template>
-    <div class="mom-amy-dashboard">
+    <div class="mama-amy-dashboard">
         <section class="hero">
             <div class="hero-content">
                 <div class="avatar-card">
@@ -214,7 +214,7 @@ const goTo = (index) => {
 </script>
 
 <style scoped>
-.mom-amy-dashboard {
+.mama-amy-dashboard {
     font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;

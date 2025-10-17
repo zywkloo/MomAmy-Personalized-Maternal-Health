@@ -113,7 +113,7 @@ return [
             'host' => env('COUCHBASE_HOST', '127.0.0.1'),
             'username' => env('COUCHBASE_USERNAME', 'Administrator'),
             'password' => env('COUCHBASE_PASSWORD', 'password'),
-            'bucket' => env('COUCHBASE_BUCKET', 'momamy'),
+            'bucket' => env('COUCHBASE_BUCKET', 'mamaamy'),
             'scope' => env('COUCHBASE_SCOPE', '_default'),
             'collection' => env('COUCHBASE_COLLECTION', 'fhir'),
             'connection_options' => [

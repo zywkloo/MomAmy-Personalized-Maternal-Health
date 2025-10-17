@@ -1,6 +1,6 @@
 import './bootstrap';
 
 import { createApp } from 'vue';
-import MomAmyDashboard from './components/MomAmyDashboard.vue';
+import MamaAmyDashboard from './components/MamaAmyDashboard.vue';
 
-createApp(MomAmyDashboard).mount('#app');
+createApp(MamaAmyDashboard).mount('#app');
