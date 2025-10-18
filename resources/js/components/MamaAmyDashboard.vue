@@ -1,6 +1,13 @@
 <template>
-    <div class="mama-amy-dashboard">
-        <section class="hero" :class="{ 'conversation-mode': !conversationComplete }">
+    <div
+        class="mama-amy-dashboard"
+        :class="{ 'post-conversation': conversationComplete }"
+    >
+        <section
+            v-if="!conversationComplete"
+            class="hero"
+            :class="{ 'conversation-mode': !conversationComplete }"
+        >
             <div class="hero-content">
                 <div class="avatar-card">
                     <div class="animated-avatar" role="img" aria-label="Animated portrait of Mama Amy offering guidance">
@@ -23,7 +30,7 @@
                     </p>
                 </div>
 
-                <div v-if="!conversationComplete" class="conversation-card">
+                <div class="conversation-card">
                     <p class="question-progress">Question {{ currentStep }} of {{ totalSteps }}</p>
                     <p class="greeting" :aria-live="isTyping ? 'off' : 'polite'">{{ displayedQuestion }}</p>
                     <div class="response-area">
@@ -65,7 +72,12 @@
                     </div>
                 </div>
 
-                <div v-else class="welcome-card">
+            </div>
+        </section>
+
+        <div v-else class="post-conversation-main">
+            <section class="summary-section">
+                <div class="welcome-card">
                     <p class="greeting">Lovely, here’s what I’ve prepared for you.</p>
                     <ul class="summary-list">
                         <li>
@@ -94,79 +106,79 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section v-if="conversationComplete" class="timeline-section">
-            <h2>Pregnancy Journey Highlights</h2>
-            <p class="timeline-intro" v-if="gestationCopy">{{ gestationCopy }}</p>
-            <div class="timeline">
-                <div
-                    v-for="event in timeline"
-                    :key="event.title"
-                    class="timeline-event"
-                >
-                    <div class="event-header">
-                        <span class="event-trimester">{{ event.window }}</span>
-                        <h3>{{ event.title }}</h3>
-                    </div>
-                    <p>{{ event.description }}</p>
-                </div>
-            </div>
-        </section>
-
-        <section v-if="conversationComplete" class="carousel-section">
-            <div class="carousel-header">
-                <h2>Personalized Essentials for You</h2>
-                <p class="personalization-note">
-                    Tailored for a {{ profile.age }} year old,
-                    {{ profile.healthCondition.toLowerCase() }} mom-to-be in month {{ profile.babyMonth }}.
-                </p>
-            </div>
-            <div class="carousel">
-                <button
-                    type="button"
-                    class="carousel-control"
-                    @click="previous"
-                    aria-label="Previous recommendations"
-                >
-                    ‹
-                </button>
-                <div class="carousel-track">
-                    <article
-                        v-for="item in visibleRecommendations"
-                        :key="item.title"
-                        class="carousel-card"
+            <section class="timeline-section">
+                <h2>Pregnancy Journey Highlights</h2>
+                <p class="timeline-intro" v-if="gestationCopy">{{ gestationCopy }}</p>
+                <div class="timeline">
+                    <div
+                        v-for="event in timeline"
+                        :key="event.title"
+                        class="timeline-event"
                     >
-                        <h3>{{ item.title }}</h3>
-                        <p class="category">{{ item.category }}</p>
-                        <p class="details">{{ item.details }}</p>
-                        <button type="button" class="action-button">Add to Plan</button>
-                    </article>
+                        <div class="event-header">
+                            <span class="event-trimester">{{ event.window }}</span>
+                            <h3>{{ event.title }}</h3>
+                        </div>
+                        <p>{{ event.description }}</p>
+                    </div>
                 </div>
-                <button
-                    type="button"
-                    class="carousel-control"
-                    @click="next"
-                    aria-label="Next recommendations"
-                >
-                    ›
-                </button>
-            </div>
-            <div class="carousel-dots" role="tablist">
-                <button
-                    v-for="(_, index) in totalSlides"
-                    :key="index"
-                    type="button"
-                    class="dot"
-                    :class="{ active: index === currentSlide }"
-                    @click="goTo(index)"
-                    :aria-label="`Go to recommendation set ${index + 1}`"
-                    role="tab"
-                    :aria-selected="index === currentSlide"
-                ></button>
-            </div>
-        </section>
+            </section>
+
+            <section class="carousel-section">
+                <div class="carousel-header">
+                    <h2>Personalized Essentials for You</h2>
+                    <p class="personalization-note">
+                        Tailored for a {{ profile.age }} year old,
+                        {{ profile.healthCondition.toLowerCase() }} mom-to-be in month {{ profile.babyMonth }}.
+                    </p>
+                </div>
+                <div class="carousel">
+                    <button
+                        type="button"
+                        class="carousel-control"
+                        @click="previous"
+                        aria-label="Previous recommendations"
+                    >
+                        ‹
+                    </button>
+                    <div class="carousel-track">
+                        <article
+                            v-for="item in visibleRecommendations"
+                            :key="item.title"
+                            class="carousel-card"
+                        >
+                            <h3>{{ item.title }}</h3>
+                            <p class="category">{{ item.category }}</p>
+                            <p class="details">{{ item.details }}</p>
+                            <button type="button" class="action-button">Add to Plan</button>
+                        </article>
+                    </div>
+                    <button
+                        type="button"
+                        class="carousel-control"
+                        @click="next"
+                        aria-label="Next recommendations"
+                    >
+                        ›
+                    </button>
+                </div>
+                <div class="carousel-dots" role="tablist">
+                    <button
+                        v-for="(_, index) in totalSlides"
+                        :key="index"
+                        type="button"
+                        class="dot"
+                        :class="{ active: index === currentSlide }"
+                        @click="goTo(index)"
+                        :aria-label="`Go to recommendation set ${index + 1}`"
+                        role="tab"
+                        :aria-selected="index === currentSlide"
+                    ></button>
+                </div>
+            </section>
+        </div>
     </div>
 </template>
 
@@ -595,6 +607,39 @@ const goTo = (index) => {
     flex-direction: column;
     gap: 3rem;
     color: #1f2933;
+}
+
+.mama-amy-dashboard.post-conversation {
+    align-items: flex-end;
+    padding-right: clamp(1rem, 6vw, 4rem);
+}
+
+.post-conversation-main {
+    width: 80%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2.5rem;
+}
+
+.post-conversation-main .summary-section {
+    width: 60%;
+    align-self: flex-end;
+}
+
+.post-conversation-main .timeline-section {
+    width: 90%;
+    max-width: 960px;
+    margin: 0;
+    align-self: flex-end;
+}
+
+.post-conversation-main .carousel-section {
+    width: 100%;
+    max-width: 1040px;
+    margin: 0;
+    align-self: flex-end;
 }
 
 .hero {
@@ -1054,6 +1099,25 @@ const goTo = (index) => {
     }
     2.5% {
         transform: scaleY(0.2);
+    }
+}
+
+@media (max-width: 1024px) {
+    .mama-amy-dashboard.post-conversation {
+        align-items: stretch;
+        padding-right: 1.5rem;
+    }
+
+    .post-conversation-main {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .post-conversation-main .summary-section,
+    .post-conversation-main .timeline-section,
+    .post-conversation-main .carousel-section {
+        width: 100%;
+        max-width: none;
     }
 }
 
