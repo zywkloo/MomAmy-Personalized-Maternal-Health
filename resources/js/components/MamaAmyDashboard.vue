@@ -1,13 +1,6 @@
 <template>
-    <div
-        class="mama-amy-dashboard"
-        :class="{ 'post-conversation': conversationComplete }"
-    >
-        <section
-            v-if="!conversationComplete"
-            class="hero"
-            :class="{ 'conversation-mode': !conversationComplete }"
-        >
+    <div class="mama-amy-dashboard" :class="{ 'post-conversation': conversationComplete }">
+        <section v-if="!conversationComplete" class="hero" :class="{ 'conversation-mode': !conversationComplete }">
             <div class="hero-content">
                 <div class="avatar-card">
                     <div class="animated-avatar" role="img" aria-label="Animated portrait of Mama Amy offering guidance">
@@ -30,160 +23,50 @@
                     </p>
                 </div>
 
-                <div class="conversation-card">
-                    <p class="question-progress">Question {{ currentStep }} of {{ totalSteps }}</p>
-                    <p class="greeting" :aria-live="isTyping ? 'off' : 'polite'">{{ displayedQuestion }}</p>
-                    <div class="response-area">
-                        <template v-if="currentQuestion && currentQuestion.type === 'choice'">
-                            <button
-                                v-for="option in currentQuestion.options"
-                                :key="option.value"
-                                type="button"
-                                class="choice-button"
-                                @click="selectOption(option.value)"
-                            >
-                                {{ option.label }}
-                            </button>
-                        </template>
-                        <template v-else-if="currentQuestion && currentQuestion.type === 'date'">
-                            <label class="visually-hidden" :for="currentQuestion.id">{{ currentQuestion.label }}</label>
-                            <input
-                                :id="currentQuestion.id"
-                                type="date"
-                                class="date-input"
-                                v-model="answers[currentQuestion.id]"
-                                :min="currentQuestion.min"
-                                :max="currentQuestion.max"
-                                :aria-describedby="currentQuestionError ? `${currentQuestion.id}-error` : undefined"
-                                @keyup.enter="proceedFromDateQuestion"
-                            />
-                            <button
-                                type="button"
-                                class="cta-button"
-                                :disabled="!canProceed"
-                                @click="proceedFromDateQuestion"
-                            >
-                                Continue
-                            </button>
-                            <p v-if="currentQuestionError" :id="`${currentQuestion.id}-error`" class="input-error">
-                                {{ currentQuestionError }}
-                            </p>
-                        </template>
-                    </div>
-                </div>
-
+                <ConversationCard
+                    :question="currentQuestion"
+                    :current-step="currentStep"
+                    :total-steps="totalSteps"
+                    :displayed-question="displayedQuestion"
+                    :is-typing="isTyping"
+                    :answers="answers"
+                    :current-question-error="currentQuestionError"
+                    :can-proceed="canProceed"
+                    @select-option="selectOption"
+                    @update-answer="updateAnswer"
+                    @proceed-date="proceedFromDateQuestion"
+                />
             </div>
         </section>
 
         <div v-else class="post-conversation-main">
-            <section class="summary-section">
-                <div class="welcome-card">
-                    <p class="greeting">Lovely, here’s what I’ve prepared for you.</p>
-                    <ul class="summary-list">
-                        <li>
-                            <span class="summary-label">Pregnancy shared:</span>
-                            <span class="summary-value">{{ friendlyPregnancyInfo }}</span>
-                        </li>
-                        <li v-if="answers.lastPeriod">
-                            <span class="summary-label">Last period started:</span>
-                            <span class="summary-value">{{ formattedLastPeriod }}</span>
-                        </li>
-                        <li v-if="estimatedDueDate">
-                            <span class="summary-label">Estimated due date:</span>
-                            <span class="summary-value">{{ estimatedDueDate }}</span>
-                        </li>
-                        <li v-if="answers.dob">
-                            <span class="summary-label">Your age:</span>
-                            <span class="summary-value">{{ profile.age }} years</span>
-                        </li>
-                        <li v-if="answers.pregnancyOrder">
-                            <span class="summary-label">Pregnancy number:</span>
-                            <span class="summary-value">{{ pregnancyOrderCopy }}</span>
-                        </li>
-                        <li v-if="answers.companion">
-                            <span class="summary-label">Support circle:</span>
-                            <span class="summary-value">{{ companionCopy }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </section>
+            <div class="post-layout">
+                <PostConversationInfoPanel
+                    :answers="answers"
+                    :friendly-pregnancy-info="friendlyPregnancyInfo"
+                    :formatted-last-period="formattedLastPeriod"
+                    :estimated-due-date="estimatedDueDate"
+                    :profile-age="profile.age"
+                    :pregnancy-order-copy="pregnancyOrderCopy"
+                    :companion-copy="companionCopy"
+                />
 
-            <section class="timeline-section">
-                <h2>Pregnancy Journey Highlights</h2>
-                <p class="timeline-intro" v-if="gestationCopy">{{ gestationCopy }}</p>
-                <div class="timeline">
-                    <div
-                        v-for="event in timeline"
-                        :key="event.title"
-                        class="timeline-event"
-                    >
-                        <div class="event-header">
-                            <span class="event-trimester">{{ event.window }}</span>
-                            <h3>{{ event.title }}</h3>
-                        </div>
-                        <p>{{ event.description }}</p>
-                    </div>
+                <div class="post-right-column">
+                    <JourneyRoadmap :timeline="timeline" :gestation-copy="gestationCopy" />
+                    <EssentialsCarousel :recommendations="recommendations" :profile="profile" />
                 </div>
-            </section>
-
-            <section class="carousel-section">
-                <div class="carousel-header">
-                    <h2>Personalized Essentials for You</h2>
-                    <p class="personalization-note">
-                        Tailored for a {{ profile.age }} year old,
-                        {{ profile.healthCondition.toLowerCase() }} mom-to-be in month {{ profile.babyMonth }}.
-                    </p>
-                </div>
-                <div class="carousel">
-                    <button
-                        type="button"
-                        class="carousel-control"
-                        @click="previous"
-                        aria-label="Previous recommendations"
-                    >
-                        ‹
-                    </button>
-                    <div class="carousel-track">
-                        <article
-                            v-for="item in visibleRecommendations"
-                            :key="item.title"
-                            class="carousel-card"
-                        >
-                            <h3>{{ item.title }}</h3>
-                            <p class="category">{{ item.category }}</p>
-                            <p class="details">{{ item.details }}</p>
-                            <button type="button" class="action-button">Add to Plan</button>
-                        </article>
-                    </div>
-                    <button
-                        type="button"
-                        class="carousel-control"
-                        @click="next"
-                        aria-label="Next recommendations"
-                    >
-                        ›
-                    </button>
-                </div>
-                <div class="carousel-dots" role="tablist">
-                    <button
-                        v-for="(_, index) in totalSlides"
-                        :key="index"
-                        type="button"
-                        class="dot"
-                        :class="{ active: index === currentSlide }"
-                        @click="goTo(index)"
-                        :aria-label="`Go to recommendation set ${index + 1}`"
-                        role="tab"
-                        :aria-selected="index === currentSlide"
-                    ></button>
-                </div>
-            </section>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+
+import ConversationCard from './ConversationCard.vue';
+import EssentialsCarousel from './EssentialsCarousel.vue';
+import JourneyRoadmap from './JourneyRoadmap.vue';
+import PostConversationInfoPanel from './PostConversationInfoPanel.vue';
 
 const answers = reactive({
     pregnancyInfo: '',
@@ -349,6 +232,10 @@ const selectOption = (value) => {
 
     answers[currentQuestion.value.id] = value;
     goToNext();
+};
+
+const updateAnswer = (id, value) => {
+    answers[id] = value;
 };
 
 const currentQuestionError = computed(() => {
@@ -519,22 +406,16 @@ const timeline = [
         window: 'Weeks 12-16',
     },
     {
-        title: 'Anatomy Scan',
+        title: 'Mid-Pregnancy Anatomy Scan',
         description:
-            'A detailed ultrasound checks in on baby’s growth and can reveal the baby’s sex if you wish to know.',
-        window: 'Week 20',
+            'Review baby’s growth and anatomy, discuss birthing preferences, and check in on your emotional wellbeing.',
+        window: 'Weeks 18-22',
     },
     {
-        title: 'Glucose Screening',
+        title: 'Third Trimester Prep',
         description:
-            'Complete a glucose tolerance test to monitor for gestational diabetes and adjust nutrition plans if needed.',
-        window: 'Weeks 24-28',
-    },
-    {
-        title: 'Birth Preferences & Classes',
-        description:
-            'Finalize your birth plan, tour delivery locations, and join prenatal, lactation, or newborn care classes.',
-        window: 'Weeks 30-34',
+            'Attend childbirth classes, review your birth plan with your provider, and prepare your postpartum support network.',
+        window: 'Weeks 28-32',
     },
     {
         title: 'Final Preparations',
@@ -576,28 +457,6 @@ const recommendations = [
         details: 'Prenatal yoga and stretching classes curated for second-trimester comfort.',
     },
 ];
-
-const visibleCount = 3;
-const currentSlide = ref(0);
-
-const totalSlides = computed(() => Math.ceil(recommendations.length / visibleCount));
-
-const visibleRecommendations = computed(() => {
-    const start = currentSlide.value * visibleCount;
-    return recommendations.slice(start, start + visibleCount);
-});
-
-const previous = () => {
-    currentSlide.value = (currentSlide.value - 1 + totalSlides.value) % totalSlides.value;
-};
-
-const next = () => {
-    currentSlide.value = (currentSlide.value + 1) % totalSlides.value;
-};
-
-const goTo = (index) => {
-    currentSlide.value = index;
-};
 </script>
 
 <style scoped>
@@ -610,46 +469,13 @@ const goTo = (index) => {
 }
 
 .mama-amy-dashboard.post-conversation {
-    align-items: flex-end;
-    padding-right: clamp(1rem, 6vw, 4rem);
-}
-
-.post-conversation-main {
-    width: 80%;
-    max-width: 1200px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2.5rem;
-}
-
-.post-conversation-main .summary-section {
-    width: 60%;
-    align-self: flex-end;
-}
-
-.post-conversation-main .timeline-section {
-    width: 90%;
-    max-width: 960px;
-    margin: 0;
-    align-self: flex-end;
-}
-
-.post-conversation-main .carousel-section {
-    width: 100%;
-    max-width: 1040px;
-    margin: 0;
-    align-self: flex-end;
+    background: radial-gradient(circle at top right, rgba(250, 232, 255, 0.45), rgba(240, 253, 244, 0.3));
+    padding-bottom: 4rem;
 }
 
 .hero {
     background: radial-gradient(circle at top left, #ffe6f2, #fdf3f0, #ffffff 70%);
-    padding: 3.5rem 1.5rem;
-    transition: padding-bottom 0.3s ease;
-}
-
-.hero.conversation-mode {
-    padding-bottom: 5rem;
+    padding: 3.5rem 1.5rem 5rem;
 }
 
 .hero-content {
@@ -757,308 +583,29 @@ const goTo = (index) => {
     line-height: 1.7;
 }
 
-.conversation-card {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 1.75rem;
-    padding: 2.75rem 2.25rem;
-    box-shadow: 0 15px 35px -20px rgba(14, 116, 144, 0.35);
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-}
-
-.question-progress {
-    font-size: 0.95rem;
-    letter-spacing: 0.05em;
-    color: #f472b6;
-    text-transform: uppercase;
-}
-
-.greeting {
-    font-size: 1.55rem;
-    font-weight: 600;
-    color: #1f2937;
-    min-height: 4.5rem;
-    line-height: 1.6;
-    position: relative;
-}
-
-.response-area {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-}
-
-.choice-button {
-    flex: 1 1 220px;
-    padding: 0.95rem 1.5rem;
-    border-radius: 999px;
-    border: none;
-    background: linear-gradient(135deg, #f472b6, #facc15);
-    color: #ffffff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.choice-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px -15px rgba(236, 72, 153, 0.6);
-}
-
-.date-input {
-    flex: 1 1 220px;
-    padding: 0.85rem 1rem;
-    border-radius: 14px;
-    border: 1px solid #d4d4d8;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.date-input:focus {
-    outline: none;
-    border-color: #f472b6;
-    box-shadow: 0 0 0 4px rgba(244, 114, 182, 0.2);
-}
-
-.cta-button {
-    padding: 0.85rem 1.75rem;
-    border-radius: 999px;
-    border: none;
-    background: linear-gradient(135deg, #f472b6, #facc15);
-    color: #ffffff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.cta-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-    box-shadow: none;
-}
-
-.cta-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px -15px rgba(236, 72, 153, 0.6);
-}
-
-.input-error {
-    width: 100%;
-    font-size: 0.95rem;
-    color: #dc2626;
-}
-
-.welcome-card {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 1.75rem;
-    padding: 2.75rem 2.5rem;
-    box-shadow: 0 15px 35px -20px rgba(14, 116, 144, 0.35);
-}
-
-.summary-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.summary-label {
-    display: block;
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: #f472b6;
-}
-
-.summary-value {
-    font-size: 1.1rem;
-    color: #1f2937;
-    font-weight: 600;
-}
-
-.timeline-section,
-.carousel-section {
-    max-width: 1100px;
-    margin: 0 auto;
+.post-conversation-main {
     padding: 0 1.5rem;
 }
 
-.timeline-section h2,
-.carousel-section h2 {
-    font-size: 1.9rem;
-    margin-bottom: 1rem;
-    color: #0f172a;
-}
-
-.timeline-intro {
-    font-size: 1rem;
-    color: #475569;
-    margin-bottom: 1.5rem;
-}
-
-.timeline {
+.post-layout {
+    max-width: 1200px;
+    margin: 0 auto;
     display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: 2.5rem;
+    align-items: flex-start;
 }
 
-.timeline-event {
-    border-left: 4px solid #f472b6;
-    padding: 1.5rem 1.5rem 1.5rem 1.75rem;
-    background-color: #ffffff;
-    border-radius: 1.25rem;
-    box-shadow: 0 10px 30px -20px rgba(15, 23, 42, 0.4);
+.post-right-column {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 2rem;
 }
 
-.event-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.event-trimester {
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #ec4899;
-}
-
-.timeline-event h3 {
-    font-size: 1.2rem;
-    color: #1f2937;
-    margin: 0;
-}
-
-.timeline-event p {
-    margin: 0;
-    color: #475569;
-    line-height: 1.6;
-}
-
-.carousel-section {
-    padding-bottom: 3rem;
-}
-
-.carousel-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    color: #334155;
-}
-
-.personalization-note {
-    font-size: 1rem;
-    color: #64748b;
-}
-
-.carousel {
-    display: flex;
-    align-items: stretch;
-    gap: 1rem;
-}
-
-.carousel-control {
-    background: transparent;
-    border: none;
-    font-size: 2.5rem;
-    color: #f472b6;
-    cursor: pointer;
-    padding: 0 0.5rem;
-    align-self: center;
-}
-
-.carousel-track {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
-}
-
-.carousel-card {
-    background: #ffffff;
-    border-radius: 1.25rem;
-    padding: 1.75rem 1.5rem;
-    box-shadow: 0 15px 35px -25px rgba(15, 23, 42, 0.35);
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.carousel-card h3 {
-    margin: 0;
-    font-size: 1.25rem;
-    color: #1f2937;
-}
-
-.category {
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #f472b6;
-}
-
-.details {
-    flex: 1;
-    margin: 0;
-    color: #475569;
-    line-height: 1.5;
-}
-
-.action-button {
-    align-self: flex-start;
-    padding: 0.65rem 1.2rem;
-    border-radius: 999px;
-    border: 1px solid rgba(236, 72, 153, 0.35);
-    background: #fff7fb;
-    color: #ec4899;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.action-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px -18px rgba(236, 72, 153, 0.8);
-}
-
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-}
-
-.dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: none;
-    background-color: #e2e8f0;
-    cursor: pointer;
-}
-
-.dot.active {
-    background-color: #f472b6;
-}
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
+@media (max-width: 960px) {
+    .post-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
 @keyframes float {
@@ -1067,80 +614,38 @@ const goTo = (index) => {
         transform: translateY(0px);
     }
     50% {
-        transform: translateY(-10px);
+        transform: translateY(-8px);
     }
 }
 
 @keyframes pulse {
     0%,
     100% {
-        opacity: 0.6;
+        opacity: 0.7;
     }
     50% {
-        opacity: 0.9;
+        opacity: 0.5;
+    }
+}
+
+@keyframes blink {
+    0%,
+    92%,
+    100% {
+        transform: scaleY(1);
+    }
+    95% {
+        transform: scaleY(0.2);
     }
 }
 
 @keyframes heartbeat {
     0%,
     100% {
-        transform: scale(0.95);
+        transform: scale(1);
     }
     50% {
-        transform: scale(1.05);
-    }
-}
-
-@keyframes blink {
-    0%,
-    5%,
-    100% {
-        transform: scaleY(1);
-    }
-    2.5% {
-        transform: scaleY(0.2);
-    }
-}
-
-@media (max-width: 1024px) {
-    .mama-amy-dashboard.post-conversation {
-        align-items: stretch;
-        padding-right: 1.5rem;
-    }
-
-    .post-conversation-main {
-        width: 100%;
-        align-items: stretch;
-    }
-
-    .post-conversation-main .summary-section,
-    .post-conversation-main .timeline-section,
-    .post-conversation-main .carousel-section {
-        width: 100%;
-        max-width: none;
-    }
-}
-
-@media (max-width: 768px) {
-    .hero {
-        padding: 2.75rem 1rem;
-    }
-
-    .conversation-card,
-    .welcome-card {
-        padding: 2.25rem 1.75rem;
-    }
-
-    .carousel {
-        flex-direction: column;
-    }
-
-    .carousel-control {
-        align-self: flex-end;
-    }
-
-    .carousel-track {
-        grid-template-columns: 1fr;
+        transform: scale(1.12);
     }
 }
 </style>
