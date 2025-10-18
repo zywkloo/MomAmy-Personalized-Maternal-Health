@@ -1,5 +1,5 @@
 {
-  "installCommand": "curl -fsSL https://github.com/shivammathur/php-build/releases/latest/download/install.sh | bash -s -- --version 8.2 --install-dir /tmp/php && export PATH=/tmp/php/bin:$PATH && curl -fsSL https://getcomposer.org/installer -o composer-setup.php && php composer-setup.php --install-dir=/tmp/php --filename=composer && composer install --prefer-dist --no-dev --optimize-autoloader && npm install",
+  "installCommand": "npm install",
   "buildCommand": "npm run build",
   "functions": {
     "api/index.php": {
