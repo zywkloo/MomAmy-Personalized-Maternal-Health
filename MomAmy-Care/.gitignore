@@ -1,0 +1,62 @@
+# Dependencies
+/node_modules
+/vendor
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+
+# Environment
+.env
+.env.backup
+.env.production
+
+# Application
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+
+# Logs
+/storage/logs/*
+!/storage/logs/.gitignore
+
+# Compiled assets
+/public/build
+/public/js
+/public/css
+
+# Testing
+/coverage
+.phpunit.result.cache
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+*.cache
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Composer
+composer.phar
+
+# Laravel Passport
+/storage/oauth-*.key
+
+# Couchbase
+/data/couchbase
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+database/*.sqlite
+database/*.sqlite3
+
+# Docker
+.dockerignore
+
